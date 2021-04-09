@@ -1,17 +1,1 @@
-/* 
-  Localizable.strings
-  Demo App
-
-  Created Woz on 10/02/21.
-  Copyright © 2021 Woz. All rights reserved.
-*/
-
-"Username" = "Username";
-"Password" = "Password";
-"Home" = "Home";
-"City" = "City";
-"Address" = "Address";
-"Phone" = "Phone";
-"DNI" = "DNI";
-"PASSPORT" = "PASSPORT";
-"TAKE_PICTURE" = "Take picture";
+"AppName" = "Awesome app";

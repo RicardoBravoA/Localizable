@@ -5,10 +5,6 @@ file_without_format='strings_without_format.xml'
 file_with_format='strings.xml'
 replace_filename='replace.strings'
 
-# AMPERSAND="&amp;"
-# MINOR_SYMBOL="&lt;"
-# MAJOR_SYMBOL="&gt;"
-
 xml=""
 
 if [ ! -f "$filename" ]
@@ -20,9 +16,7 @@ fi
 # xml+=$(echo '<?xml version="1.0" encoding="utf-8"?>')
 xml+=$(echo '<resources>')
 
-# sed -e "s/&/$AMPERSAND/g; s/\</$MINOR_SYMBOL/g; s/\>/$MAJOR_SYMBOL/g" $filename > $replace_filename
-
-# echo $replace_filename
+echo "Wait..."
 
 while read line; do
 	key=$(echo $line | cut -d'"' -f2)
@@ -61,10 +55,30 @@ while read line; do
 
 	done
 
-	# concat new key
-	newKey=$(echo "$firstLetterLower$letters")
-	xml+=$(echo "  <string name=\"$newKey\">$value</string>")
-	letters=""
+	# validate & character
+	value=$(echo "$value" | sed -r "s/\&/\&amp;/g")
+
+	# validate ' character
+	value=$(echo "$value" | sed -r "s/\'/\&#8217;/g")
+
+	# validate - character
+	value=$(echo "$value" | sed -r "s/\-/\&#8211;/g")
+
+
+	if [ ! -z "$value" ]
+	then
+		# concat new key
+		newKey=$(echo "$firstLetterLower$letters")
+
+		#validate newKey not equals continue (reserved keyboard)
+		if [ $newKey == "continue" ]; then
+			newKey+="_"
+		fi	
+
+		xml+=$(echo "  <string name=\"$newKey\">$value</string>")
+		letters=""
+	fi
+
 
 done < <(cat $filename | egrep '^".+"\s?=\s?.+$')
 
@@ -75,24 +89,21 @@ then
     rm $file_without_format
 fi
 
-echo $xml
-
 # generate file without format
 echo $xml >> $file_without_format
 
-# error with symbols &, < and >
-# --------------------------------
-
-# if [ -f "$file_with_format" ]
-# then
-#     rm $file_with_format
-# fi
+if [ -f "$file_with_format" ]
+then
+    rm $file_with_format
+fi
 
 # generate file with format
-# xmllint --format $file_without_format > $file_with_format
-# xmlstarlet format --indent-tab $file_without_format > $file_with_format
+xmllint --format $file_without_format > $file_with_format
+xmlstarlet format --indent-tab $file_without_format > $file_with_format
 
-# if [ -f "$file_without_format" ]
-# then
-#     rm $file_without_format
-# fi
+if [ -f "$file_without_format" ]
+then
+    rm $file_without_format
+fi
+
+echo "Check the file $file_with_format"
