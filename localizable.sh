@@ -13,12 +13,11 @@ then
     exit
 fi
 
-# xml+=$(echo '<?xml version="1.0" encoding="utf-8"?>')
 xml+=$(echo '<resources>')
 
 echo "Wait..."
 
-while read line; do
+while read -r line; do
 	key=$(echo $line | cut -d'"' -f2)
 	value=$(echo $line | cut -d'"' -f4)
 
@@ -63,7 +62,6 @@ while read line; do
 
 	# validate - character
 	value=$(echo "$value" | sed -r "s/\-/\&#8211;/g")
-
 
 	if [ ! -z "$value" ]
 	then
