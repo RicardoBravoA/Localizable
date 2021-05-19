@@ -63,6 +63,16 @@ while read -r line; do
 	# validate - character
 	value=$(echo "$value" | sed -r "s/\-/\&#8211;/g")
 
+	# replace %@ for %1$s
+	replaceCharacter=$(echo $value| grep -o %@ | wc -l)
+
+	if ((replaceCharacter > 0))
+	then
+		for ((i=1;i<=${replaceCharacter};i++)); do
+			value=$(echo "$value" | sed "s/%@/$(echo "%${i}\$s")/")
+		done
+	fi	
+
 	if [ ! -z "$value" ]
 	then
 		# concat new key
